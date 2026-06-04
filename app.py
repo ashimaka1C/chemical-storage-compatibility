@@ -9,7 +9,20 @@ from datetime import datetime
 st.set_page_config(page_title="Chemical Compatibility PRO", layout="wide")
 
 # =========================
-# DATABASE (~300 bahan)
+# STYLE
+# =========================
+st.markdown("""
+<style>
+.title {font-size:40px; font-weight:bold;}
+.safe {color:#00c853;}
+.danger {color:#ff1744;}
+.warning {color:#ff9100;}
+.box {padding:15px; border-radius:10px; background:#f5f5f5;}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================
+# DATABASE (~300)
 # =========================
 base = {
 "HCl - Asam Klorida":"Asam","H2SO4 - Asam Sulfat":"Asam","HNO3 - Asam Nitrat":"Asam",
@@ -34,68 +47,71 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # =========================
-# ANALISIS
+# ANALISIS DETAIL
 # =========================
 def analyze(t1, t2):
 
     if "Asam" in [t1,t2] and "Basa" in [t1,t2]:
         return ("❌ BERBAHAYA",
-        "Reaksi netralisasi menghasilkan panas tinggi (eksoterm) yang dapat memicu percikan, tekanan, bahkan ledakan kecil.",
-        "Pisahkan asam dan basa dalam lemari khusus (corrosive cabinet).")
+        """Reaksi antara asam dan basa merupakan reaksi netralisasi yang menghasilkan garam dan air.
+Reaksi ini bersifat eksoterm, yaitu melepaskan panas dalam jumlah besar.
+Dalam kondisi tertentu, reaksi ini dapat menyebabkan tekanan tinggi, percikan bahan kimia, bahkan ledakan kecil.
+Uap yang dihasilkan juga dapat mengiritasi sistem pernapasan.""",
+        """Pisahkan dalam lemari khusus asam dan basa (corrosive cabinet),
+gunakan ventilasi baik dan wadah tahan korosi.""")
 
     elif "Oksidator" in [t1,t2] and "Flammable" in [t1,t2]:
         return ("❌ BERBAHAYA",
-        "Oksidator mempercepat pembakaran dan dapat menyebabkan kebakaran hebat atau ledakan.",
-        "Jauhkan oksidator dari bahan mudah terbakar.")
+        """Oksidator meningkatkan laju pembakaran dan dapat menyebabkan reaksi sangat cepat.
+Jika bercampur dengan bahan mudah terbakar, dapat terjadi kebakaran hebat bahkan tanpa sumber api.""",
+        """Simpan oksidator dan bahan mudah terbakar di tempat terpisah,
+hindari panas dan percikan.""")
 
     elif "Reaktif Air" in [t1,t2] and "Air" in [t1,t2]:
         return ("❌ BERBAHAYA",
-        "Reaksi dengan air menghasilkan gas hidrogen yang mudah terbakar dan panas tinggi.",
-        "Simpan di tempat kering dan tertutup.")
+        """Bahan reaktif air menghasilkan gas hidrogen yang sangat mudah terbakar.
+Reaksi ini sangat cepat dan dapat menyebabkan ledakan.""",
+        """Simpan di tempat kering, gunakan wadah kedap udara.""")
 
     elif t1 == t2:
         return ("✔ AMAN",
-        "Bahan memiliki sifat sama dan relatif stabil.",
-        "Simpan dalam kelompok yang sama.")
+        """Bahan memiliki sifat yang sama sehingga relatif stabil.""",
+        """Simpan dalam kelompok yang sama dengan label jelas.""")
 
     else:
         return ("⚠ PERLU PERHATIAN",
-        "Tidak ada reaksi langsung, namun potensi interaksi tetap ada.",
-        "Gunakan pemisahan sekunder.")
+        """Tidak ada reaksi langsung, namun potensi interaksi tetap ada.""",
+        """Gunakan pemisahan sekunder.""")
 
 # =========================
 # MENU
 # =========================
 menu = st.sidebar.radio("📌 Menu", [
-    "🏠 Home",
-    "🔍 Cek Kompatibilitas",
-    "📚 Materi",
-    "🧪 Database",
-    "📊 Dashboard"
+    "🏠 Home","🔍 Cek","📚 Materi","🧪 Database","📊 Dashboard"
 ])
 
 # =========================
 # HOME
 # =========================
 if menu == "🏠 Home":
-    st.title("🧪 Chemical Compatibility System")
+    st.markdown("<div class='title'>🧪 Chemical Compatibility System PRO</div>", unsafe_allow_html=True)
 
     st.subheader("📖 Pengertian")
-    st.write("Sistem penyimpanan bahan kimia kompatibel adalah metode pengelompokan bahan berdasarkan sifat kimia untuk mencegah reaksi berbahaya.")
+    st.write("Metode penyimpanan bahan kimia berdasarkan sifat untuk mencegah reaksi berbahaya.")
 
     st.subheader("🎯 Tujuan")
     st.write("""
-    - Mencegah kecelakaan laboratorium  
-    - Menjamin keamanan penyimpanan  
-    - Mendukung sistem K3  
+    - Mencegah kecelakaan  
+    - Menjamin keamanan  
+    - Mendukung K3  
     """)
 
 # =========================
 # CEK
 # =========================
-elif menu == "🔍 Cek Kompatibilitas":
+elif menu == "🔍 Cek":
 
-    st.title("🔍 Analisis Kompatibilitas")
+    st.title("🔍 Cek Kompatibilitas")
 
     c1,c2 = st.columns(2)
     with c1:
@@ -113,17 +129,28 @@ elif menu == "🔍 Cek Kompatibilitas":
 
         status, penjelasan, penyimpanan = analyze(t1,t2)
 
-        st.markdown(f"## {status}")
-        st.write(f"{chem1} ({t1}) vs {chem2} ({t2})")
+        if "AMAN" in status:
+            st.markdown(f"<h2 class='safe'>{status}</h2>", unsafe_allow_html=True)
+        elif "BERBAHAYA" in status:
+            st.markdown(f"<h2 class='danger'>{status}</h2>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<h2 class='warning'>{status}</h2>", unsafe_allow_html=True)
 
-        st.subheader("🧠 Penjelasan")
+        st.write(f"**{chem1} ({t1}) vs {chem2} ({t2})**")
+
+        st.subheader("🧠 Penjelasan Ilmiah")
         st.write(penjelasan)
 
         st.subheader("📦 Penyimpanan")
         st.info(penyimpanan)
 
         st.subheader("⚠ Dampak")
-        st.write("- Kebakaran\n- Ledakan\n- Gas beracun")
+        st.write("""
+        - Kebakaran  
+        - Ledakan  
+        - Gas beracun  
+        - Kerusakan alat  
+        """)
 
         st.session_state.history.append({
             "Waktu": datetime.now().strftime("%H:%M:%S"),
@@ -133,37 +160,31 @@ elif menu == "🔍 Cek Kompatibilitas":
         })
 
 # =========================
-# MATERI (ISI LENGKAP)
+# MATERI FULL
 # =========================
 elif menu == "📚 Materi":
-    st.title("📚 Materi Lengkap")
+    st.title("📚 Materi Lengkap Sistem Penyimpanan Kimia")
 
     st.markdown("""
-### Pengertian Sistem Penyimpanan Bahan Kimia Kompatibel
-Sistem penyimpanan bahan kimia kompatibel adalah metode penataan bahan berdasarkan sifat fisika dan kimia untuk mencegah reaksi berbahaya.
+### 1. Pengertian Sistem Penyimpanan Bahan Kimia Kompatibel
+Sistem penyimpanan bahan kimia kompatibel merupakan metode penataan bahan kimia berdasarkan sifat fisika dan karakteristik kimia masing-masing bahan untuk mencegah reaksi berbahaya. Sistem ini menggantikan metode alfabetis yang berisiko tinggi karena dapat menempatkan bahan reaktif secara berdekatan.
 
-### Fungsi
-- Mengelompokkan bahan sesuai sifat
-- Mengurangi risiko kecelakaan
-- Mempermudah inventaris
+### 2. Fungsi Utama
+Sistem ini berfungsi sebagai pengendalian risiko dengan mengelompokkan bahan menjadi kategori seperti flammable, korosif, oksidator, toxic, dan reaktif air. Selain itu, mempermudah inventaris dan pengawasan.
 
-### Manfaat
-- Melindungi pekerja
-- Mencegah kebakaran & ledakan
-- Menjaga fasilitas
+### 3. Manfaat
+- Mencegah kecelakaan kerja  
+- Melindungi aset laboratorium  
+- Meningkatkan efisiensi operasional  
 
-### Alasan
-Bahan kimia bersifat reaktif dan dapat berbahaya jika tidak dipisahkan.
+### 4. Alasan Penerapan
+Bahan kimia bersifat reaktif dan dapat menimbulkan reaksi spontan seperti kebakaran atau ledakan jika tidak dipisahkan.
 
-### Prinsip
-- Gunakan lemari khusus
-- Pisahkan kategori
-- Gunakan secondary containment
+### 5. Prinsip Pemisahan
+Gunakan lemari khusus, sekat fisik, dan secondary containment untuk mencegah pencampuran.
 
-### Fasilitas
-- Label GHS
-- Rak tahan kimia
-- Sistem administrasi
+### 6. Fasilitas dan Administrasi
+Gunakan label GHS, rak tahan kimia, dan sistem pencatatan bahan yang baik.
 """)
 
 # =========================
@@ -187,6 +208,6 @@ elif menu == "📊 Dashboard":
         st.bar_chart(df["Hasil"].value_counts())
 
         csv = df.to_csv(index=False)
-        st.download_button("Download", csv, "riwayat.csv")
+        st.download_button("Download CSV", csv, "riwayat.csv")
     else:
         st.info("Belum ada data")
