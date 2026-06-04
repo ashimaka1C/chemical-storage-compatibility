@@ -6,7 +6,7 @@ from datetime import datetime
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="FCOT Chemical System", layout="wide")
+st.set_page_config(page_title="FCOT Chemical System PRO", layout="wide")
 
 # =========================
 # STYLE
@@ -17,7 +17,6 @@ st.markdown("""
 .safe {color:#00c853;}
 .danger {color:#ff1744;}
 .warning {color:#ff9100;}
-.box {padding:15px; border-radius:10px; background:#f5f5f5;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -72,61 +71,46 @@ if "history" not in st.session_state:
 def analyze(t1, t2):
 
     if "Flammable" in [t1,t2] and "Oxidizer" in [t1,t2]:
-        return ("❌ BERBAHAYA",
-        "Flammable + Oxidizer → kebakaran atau ledakan besar.",
-        "Pisahkan di lemari khusus.")
+        return ("❌ BERBAHAYA","Flammable + Oxidizer → kebakaran/ledakan","Pisahkan ketat")
 
     elif "Corrosive" in [t1,t2] and "Toxic" in [t1,t2]:
-        return ("❌ BERBAHAYA",
-        "Korosif dapat merusak wadah → toxic bocor.",
-        "Gunakan secondary containment.")
+        return ("❌ BERBAHAYA","Korosi → toxic bocor","Gunakan secondary containment")
 
     elif "Oxidizer" in [t1,t2] and "Toxic" in [t1,t2]:
-        return ("❌ BERBAHAYA",
-        "Mempercepat pembentukan gas beracun.",
-        "Pisahkan ketat.")
+        return ("❌ BERBAHAYA","Gas beracun meningkat","Pisahkan ketat")
 
     elif "Flammable" in [t1,t2] and "Toxic" in [t1,t2]:
-        return ("⚠ PERLU PERHATIAN",
-        "Kebakaran + gas beracun.",
-        "Ventilasi baik.")
+        return ("⚠ PERLU PERHATIAN","Kebakaran + gas beracun","Ventilasi baik")
 
     elif "Corrosive" in [t1,t2] and "Flammable" in [t1,t2]:
-        return ("⚠ PERLU PERHATIAN",
-        "Korosi → kebocoran bahan flammable.",
-        "Gunakan wadah tahan korosi.")
+        return ("⚠ PERLU PERHATIAN","Korosi → bocor","Wadah tahan korosi")
 
     elif t1 == t2:
-        return ("✔ AMAN",
-        "Kategori sama → relatif stabil.",
-        "Simpan bersama.")
+        return ("✔ AMAN","Kategori sama","Simpan bersama")
 
     else:
-        return ("⚠ PERLU PERHATIAN",
-        "Tidak reaktif langsung tapi tetap berisiko.",
-        "Pisahkan sekunder.")
+        return ("⚠ PERLU PERHATIAN","Potensi interaksi","Pisahkan sekunder")
 
 # =========================
 # MENU
 # =========================
 menu = st.sidebar.radio("📌 Menu", [
-    "🏠 Home","🔍 Cek","📚 Materi","🧪 Database","📊 Dashboard"
+    "🏠 Home","🔍 Cek","📊 Dashboard","📚 Materi","🧪 Database"
 ])
 
 # =========================
 # HOME
 # =========================
 if menu == "🏠 Home":
-    st.markdown("<div class='title'>🧪 FCOT Chemical Storage System</div>", unsafe_allow_html=True)
-
-    st.write("Sistem penyimpanan bahan kimia berbasis FCOT dan standar GHS.")
+    st.markdown("<div class='title'>🧪 FCOT + GHS SYSTEM PRO</div>", unsafe_allow_html=True)
+    st.write("Sistem analisis kompatibilitas bahan kimia berbasis FCOT dan GHS.")
 
 # =========================
 # CEK
 # =========================
 elif menu == "🔍 Cek":
 
-    st.title("🔍 Cek Kompatibilitas FCOT + GHS")
+    st.title("🔍 Cek Kompatibilitas")
 
     c1,c2 = st.columns(2)
     with c1:
@@ -151,21 +135,20 @@ elif menu == "🔍 Cek":
         else:
             st.markdown(f"<h2 class='warning'>{status}</h2>", unsafe_allow_html=True)
 
-        # GHS IMAGE DISPLAY
         col1, col2 = st.columns(2)
 
         with col1:
-            st.image(ghs_images.get(t1, ""), width=120)
+            st.image(ghs_images.get(t1,""), width=120)
             st.write(f"{chem1} ({t1})")
 
         with col2:
-            st.image(ghs_images.get(t2, ""), width=120)
+            st.image(ghs_images.get(t2,""), width=120)
             st.write(f"{chem2} ({t2})")
 
-        st.subheader("🧠 Penjelasan")
+        st.write("### 🧠 Penjelasan")
         st.write(penjelasan)
 
-        st.subheader("📦 Penyimpanan")
+        st.write("### 📦 Penyimpanan")
         st.info(penyimpanan)
 
         st.session_state.history.append({
@@ -176,27 +159,65 @@ elif menu == "🔍 Cek":
         })
 
 # =========================
+# DASHBOARD
+# =========================
+elif menu == "📊 Dashboard":
+
+    st.title("📊 Analisis Data")
+
+    if st.session_state.history:
+        df = pd.DataFrame(st.session_state.history)
+
+        st.dataframe(df)
+
+        # BAR CHART
+        st.subheader("📈 Distribusi Hasil")
+        st.bar_chart(df["Hasil"].value_counts())
+
+        # TOP BAHAN
+        st.subheader("📊 Bahan Paling Sering Dicek")
+        top = pd.concat([df["Bahan1"], df["Bahan2"]]).value_counts().head(5)
+        st.bar_chart(top)
+
+        # ANALISIS
+        total = len(df)
+        bahaya = len(df[df["Hasil"].str.contains("BERBAHAYA")])
+        aman = len(df[df["Hasil"].str.contains("AMAN")])
+
+        st.subheader("🧠 Insight")
+
+        if total > 0:
+            st.write(f"Total Analisis: {total}")
+            st.write(f"Berbahaya: {bahaya}")
+            st.write(f"Aman: {aman}")
+
+            if bahaya > total * 0.5:
+                st.error("🚨 Banyak kombinasi berbahaya!")
+            elif aman > total * 0.7:
+                st.success("✅ Sistem relatif aman")
+
+    else:
+        st.info("Belum ada data")
+
+# =========================
 # MATERI
 # =========================
 elif menu == "📚 Materi":
+    st.title("📚 FCOT & GHS")
 
-    st.title("📚 Sistem FCOT & GHS")
+    st.write("""
+    FCOT:
+    - Flammable
+    - Corrosive
+    - Oxidizer
+    - Toxic
 
-    st.markdown("""
-### FCOT
-- Flammable  
-- Corrosive  
-- Oxidizer  
-- Toxic  
-
-### Simbol GHS
-- GHS02 🔥 Flammable  
-- GHS05 🧪 Corrosive  
-- GHS03 ⚡ Oxidizer  
-- GHS06 ☠️ Toxic  
-
-Digunakan secara global dalam K3 laboratorium.
-""")
+    GHS:
+    - GHS02 🔥
+    - GHS05 🧪
+    - GHS03 ⚡
+    - GHS06 ☠️
+    """)
 
 # =========================
 # DATABASE
@@ -204,21 +225,3 @@ Digunakan secara global dalam K3 laboratorium.
 elif menu == "🧪 Database":
     df = pd.DataFrame(list(chemical_db.items()), columns=["Bahan","Kategori"])
     st.dataframe(df)
-
-# =========================
-# DASHBOARD
-# =========================
-elif menu == "📊 Dashboard":
-
-    st.title("📊 Riwayat")
-
-    if st.session_state.history:
-        df = pd.DataFrame(st.session_state.history)
-        st.dataframe(df)
-
-        st.bar_chart(df["Hasil"].value_counts())
-
-        csv = df.to_csv(index=False)
-        st.download_button("Download CSV", csv, "riwayat.csv")
-    else:
-        st.info("Belum ada data")
