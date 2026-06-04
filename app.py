@@ -15,10 +15,20 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+    body {
+        background-color: #1a1a2e;
+        color: #eaeaea;
+    }
+    
+    .main {
+        background-color: #16213e;
+        color: #eaeaea;
+    }
+    
     .main-title {
         font-size: 48px;
         font-weight: bold;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
@@ -28,8 +38,8 @@ st.markdown("""
     .section-title {
         font-size: 28px;
         font-weight: bold;
-        color: #2c3e50;
-        border-bottom: 3px solid #667eea;
+        color: #00d4ff;
+        border-bottom: 3px solid #00d4ff;
         padding-bottom: 10px;
         margin-top: 20px;
     }
@@ -40,27 +50,27 @@ st.markdown("""
         font-weight: bold;
         font-size: 24px;
         text-align: center;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         margin: 20px 0;
         animation: slideIn 0.6s ease-out;
     }
     
     .safe {
-        background: linear-gradient(135deg, #00c853 0%, #00a040 100%);
+        background: linear-gradient(135deg, #00d97e 0%, #00a85e 100%);
         color: white;
-        border: 3px solid #00a040;
+        border: 3px solid #00a85e;
     }
     
     .danger {
-        background: linear-gradient(135deg, #ff1744 0%, #d01e3c 100%);
+        background: linear-gradient(135deg, #ff006e 0%, #c90050 100%);
         color: white;
-        border: 3px solid #d01e3c;
+        border: 3px solid #c90050;
     }
     
     .warning {
-        background: linear-gradient(135deg, #ff9100 0%, #e67e22 100%);
+        background: linear-gradient(135deg, #ffa500 0%, #cc8400 100%);
         color: white;
-        border: 3px solid #e67e22;
+        border: 3px solid #cc8400;
     }
     
     @keyframes slideIn {
@@ -88,15 +98,6 @@ st.markdown("""
         }
     }
     
-    @keyframes rotate {
-        0% {
-            transform: rotateY(0deg);
-        }
-        100% {
-            transform: rotateY(360deg);
-        }
-    }
-    
     .ghs-icon-container {
         text-align: center;
         margin: 20px 0;
@@ -105,7 +106,7 @@ st.markdown("""
     .ghs-icon {
         display: inline-block;
         animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
         transition: transform 0.3s ease;
     }
     
@@ -113,37 +114,31 @@ st.markdown("""
         transform: scale(1.1) rotateZ(5deg);
     }
     
-    .ghs-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 20px;
-        margin: 30px 0;
-    }
-    
     .chemical-card {
-        background: white;
+        background: #0f3460;
         border-radius: 15px;
         padding: 20px;
         text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         transition: all 0.3s ease;
         animation: slideIn 0.6s ease-out;
+        border: 2px solid #00d4ff;
     }
     
     .chemical-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 25px rgba(0,212,255,0.3);
     }
     
     .chemical-name {
         font-weight: bold;
-        color: #2c3e50;
+        color: #00d4ff;
         margin-top: 15px;
         font-size: 14px;
     }
     
     .chemical-category {
-        color: #667eea;
+        color: #ffa500;
         font-size: 12px;
         margin-top: 8px;
         font-weight: 600;
@@ -151,7 +146,7 @@ st.markdown("""
     
     .danger-badge {
         display: inline-block;
-        background: #ff1744;
+        background: #ff006e;
         color: white;
         padding: 5px 10px;
         border-radius: 20px;
@@ -162,7 +157,7 @@ st.markdown("""
     
     .warning-badge {
         display: inline-block;
-        background: #ff9100;
+        background: #ffa500;
         color: white;
         padding: 5px 10px;
         border-radius: 20px;
@@ -173,7 +168,7 @@ st.markdown("""
     
     .safe-badge {
         display: inline-block;
-        background: #00c853;
+        background: #00d97e;
         color: white;
         padding: 5px 10px;
         border-radius: 20px;
@@ -183,27 +178,58 @@ st.markdown("""
     }
     
     .info-box {
-        background: #e3f2fd;
-        border-left: 5px solid #2196F3;
+        background: #0f3460;
+        border-left: 5px solid #00d4ff;
         padding: 15px;
         border-radius: 8px;
         margin: 15px 0;
+        color: #eaeaea;
     }
     
     .metric-card {
-        background: white;
+        background: #0f3460;
         padding: 20px;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         text-align: center;
         margin: 10px;
+        border: 2px solid #00d4ff;
     }
     
     .metric-value {
         font-size: 36px;
         font-weight: bold;
-        color: #667eea;
+        color: #00d4ff;
         margin: 10px 0;
+    }
+    
+    .metric-label {
+        color: #ffa500;
+        font-weight: bold;
+    }
+    
+    .stButton > button {
+        background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 212, 255, 0.4);
+    }
+    
+    .stSelectbox, .stTextInput {
+        color: #eaeaea;
+    }
+    
+    /* Sidebar styling */
+    .sidebar .sidebar-content {
+        background-color: #0f3460;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -212,14 +238,12 @@ if "history" not in st.session_state:
     st.session_state.history = []
 if "favorites" not in st.session_state:
     st.session_state.favorites = []
-if "show_animation" not in st.session_state:
-    st.session_state.show_animation = False
 
 st.sidebar.markdown("""
 <div style='text-align:center; padding:20px 0;'>
     <h1 style='font-size:40px; margin:0;'>🧪</h1>
-    <h2 style='font-size:20px; margin:5px 0; color:#667eea;'>FCOT PRO</h2>
-    <p style='font-size:12px; color:#666;'>Chemical Safety System v3.0</p>
+    <h2 style='font-size:20px; margin:5px 0; color:#00d4ff;'>FCOT PRO</h2>
+    <p style='font-size:12px; color:#ffa500;'>Chemical Safety System v3.0</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -235,7 +259,7 @@ if menu == "🏠 Home":
     
     st.markdown("""
     <div class='info-box'>
-        <h3>🎯 Selamat Datang di FCOT Chemical System PRO v3.0</h3>
+        <h3 style='color:#00d4ff;'>🎯 Selamat Datang di FCOT Chemical System PRO v3.0</h3>
         <p>Sistem manajemen keamanan bahan kimia dengan visualisasi 3D GHS yang canggih, database 500+ bahan kimia, dan analisis real-time.</p>
     </div>
     """, unsafe_allow_html=True)
@@ -245,8 +269,8 @@ if menu == "🏠 Home":
         st.markdown("""
         <div class='metric-card'>
             <div style='font-size:40px;'>🔍</div>
-            <div style='font-weight:bold; color:#667eea;'>CEK KOMPATIBILITAS</div>
-            <p style='font-size:12px; color:#666;'>Analisis real-time dengan visualisasi 3D</p>
+            <div class='metric-label'>CEK KOMPATIBILITAS</div>
+            <p style='font-size:12px; color:#eaeaea;'>Analisis real-time dengan visualisasi 3D</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -254,8 +278,8 @@ if menu == "🏠 Home":
         st.markdown("""
         <div class='metric-card'>
             <div style='font-size:40px;'>📊</div>
-            <div style='font-weight:bold; color:#667eea;'>DASHBOARD ANALYTICS</div>
-            <p style='font-size:12px; color:#666;'>Visualisasi data keamanan lengkap</p>
+            <div class='metric-label'>DASHBOARD ANALYTICS</div>
+            <p style='font-size:12px; color:#eaeaea;'>Visualisasi data keamanan lengkap</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -263,8 +287,8 @@ if menu == "🏠 Home":
         st.markdown("""
         <div class='metric-card'>
             <div style='font-size:40px;'>📚</div>
-            <div style='font-weight:bold; color:#667eea;'>PANDUAN LENGKAP</div>
-            <p style='font-size:12px; color:#666;'>Edukasi FCOT & GHS interaktif</p>
+            <div class='metric-label'>PANDUAN LENGKAP</div>
+            <p style='font-size:12px; color:#eaeaea;'>Edukasi FCOT & GHS interaktif</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -306,19 +330,29 @@ elif menu == "🔍 Cek Kompatibilitas":
         st.markdown("**Bahan Kimia 2** 🧪")
         chem2 = st.selectbox("Pilih bahan kedua", list(chemical_db.keys()), key="chem2", label_visibility="collapsed")
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        check_btn = st.button("✅ Cek Sekarang", use_container_width=True, key="check")
+        check_btn = st.button("✅ Cek Sekarang", use_container_width=True, key="check_btn")
     with col2:
-        st.button("🔄 Tukar Posisi", use_container_width=True, key="swap")
+        swap_btn = st.button("🔄 Tukar Posisi", use_container_width=True, key="swap_btn")
     with col3:
-        st.button("🗑️ Reset", use_container_width=True, key="reset")
+        reset_btn = st.button("🗑️ Reset", use_container_width=True, key="reset_btn")
+    with col4:
+        clear_all = st.button("🧹 Hapus Semua", use_container_width=True, key="clear_all_btn")
     
-    if st.session_state.get("swap"):
-        chem1, chem2 = chem2, chem1
+    if swap_btn:
+        st.session_state.chem1 = chem2
+        st.session_state.chem2 = chem1
         st.rerun()
     
-    if st.session_state.get("reset"):
+    if reset_btn:
+        st.session_state.chem1 = list(chemical_db.keys())[0]
+        st.session_state.chem2 = list(chemical_db.keys())[1]
+        st.rerun()
+    
+    if clear_all:
+        st.session_state.history = []
+        st.success("✅ Semua data riwayat dihapus!")
         st.rerun()
     
     if check_btn:
@@ -363,16 +397,16 @@ elif menu == "🔍 Cek Kompatibilitas":
         
         with col_ghs1:
             st.markdown("<div class='ghs-icon-container'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='ghs-icon'><img src='{ghs_images.get(t1, '')}' width='120' style='filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));'></div>", unsafe_allow_html=True)
-            st.markdown(f"<p style='font-weight:bold; margin-top:10px;'>{t1}</p></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='ghs-icon'><img src='{ghs_images.get(t1, '')}' width='120' style='filter: drop-shadow(0 8px 16px rgba(0,212,255,0.5));'></div>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-weight:bold; margin-top:10px; color:#00d4ff;'>{t1}</p></div>", unsafe_allow_html=True)
         
         with col_ghs2:
-            st.markdown("<div style='text-align:center; display:flex; align-items:center; justify-content:center; height:150px;'><h2 style='font-size:48px;'>+</h2></div>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; display:flex; align-items:center; justify-content:center; height:150px;'><h2 style='font-size:48px; color:#00d4ff;'>+</h2></div>", unsafe_allow_html=True)
         
         with col_ghs3:
             st.markdown("<div class='ghs-icon-container'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='ghs-icon'><img src='{ghs_images.get(t2, '')}' width='120' style='filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));'></div>", unsafe_allow_html=True)
-            st.markdown(f"<p style='font-weight:bold; margin-top:10px;'>{t2}</p></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='ghs-icon'><img src='{ghs_images.get(t2, '')}' width='120' style='filter: drop-shadow(0 8px 16px rgba(0,212,255,0.5));'></div>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-weight:bold; margin-top:10px; color:#00d4ff;'>{t2}</p></div>", unsafe_allow_html=True)
         
         st.markdown("---")
         
@@ -417,7 +451,7 @@ elif menu == "📊 Dashboard":
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("📊 Total Analisis", len(df))
+            st.metric("📊 Total Analisis", len(df), delta=None)
         
         bahaya = len(df[df["Hasil"].str.contains("BERBAHAYA", na=False)])
         with col2:
@@ -438,15 +472,16 @@ elif menu == "📊 Dashboard":
         with col1:
             st.markdown("<h3 class='section-title'>📈 Distribusi Hasil Analisis</h3>", unsafe_allow_html=True)
             result_counts = df["Hasil"].value_counts()
-            fig = px.pie(values=result_counts.values, names=result_counts.index, color_discrete_map={"BERBAHAYA": "#ff1744", "AMAN": "#00c853", "PERLU PERHATIAN": "#ff9100"})
+            fig = px.pie(values=result_counts.values, names=result_counts.index, color_discrete_map={"BERBAHAYA": "#ff006e", "AMAN": "#00d97e", "PERLU PERHATIAN": "#ffa500"})
+            fig.update_layout(template="plotly_dark")
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
             st.markdown("<h3 class='section-title'>🧪 Kategori Bahan Terpopuler</h3>", unsafe_allow_html=True)
             all_cats = pd.concat([df["Kategori 1"], df["Kategori 2"]])
             cat_counts = all_cats.value_counts().head(8)
-            fig = px.bar(x=cat_counts.index, y=cat_counts.values, labels={"x": "Kategori", "y": "Frekuensi"})
-            fig.update_layout(height=400)
+            fig = px.bar(x=cat_counts.index, y=cat_counts.values, labels={"x": "Kategori", "y": "Frekuensi"}, color_discrete_sequence=["#00d4ff"])
+            fig.update_layout(height=400, template="plotly_dark")
             st.plotly_chart(fig, use_container_width=True)
         
         st.markdown("---")
@@ -546,16 +581,6 @@ elif menu == "📚 Panduan":
         3. **Suhu Terkontrol** - Jauh dari sumber panas >25°C
         4. **Wadah Tepat** - Sesuai jenis bahan kimia
         5. **Labeling Jelas** - Identifikasi mudah dan aman
-        
-        ### Kombinasi Aman:
-        - ✅ Flammable + Flammable (area terlindung api)
-        - ✅ Corrosive + Corrosive (area ventilasi khusus)
-        - ✅ Toxic + Toxic (dengan secondary containment)
-        
-        ### Kombinasi Berbahaya:
-        - ❌ Flammable + Oxidizer = Ledakan besar!
-        - ❌ Corrosive + Toxic = Gas beracun & korosif
-        - ❌ Oxidizer + Toxic = Reaksi eksplosif
         """)
     
     with tab4:
@@ -564,18 +589,6 @@ elif menu == "📚 Panduan":
         
         **Q: Apakah bahan kategori sama selalu aman?**
         A: Tidak selalu. Kompatibilitas tergantung sifat kimia spesifik setiap bahan.
-        
-        **Q: Berapa jarak pisah untuk penyimpanan?**
-        A: Minimal 1-2 meter untuk kategori berbeda, tergantung regulasi lokal.
-        
-        **Q: Apa yang dilakukan jika ada kombinasi berbahaya?**
-        A: PISAHKAN segera! Gunakan secondary containment, pastikan ventilasi baik.
-        
-        **Q: Berapa lama bahan kimia bisa disimpan?**
-        A: Tergantung jenis bahan (lihat tanggal kadaluarsa pada label).
-        
-        **Q: Apakah GHS sama dengan FCOT?**
-        A: Tidak. GHS adalah standar pelabelan global, FCOT adalah sistem kategorisasi bahan kimia.
         """)
 
 elif menu == "🧪 Database":
