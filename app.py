@@ -340,7 +340,6 @@ elif menu == "🔍 Cek Kompatibilitas":
     with col4:
         clear_all = st.button("🧹 Hapus Semua", use_container_width=True, key="clear_all_btn")
     
-    if swap_btn:
         # =================================================================
 # SKRIP PERBAIKAN: Ganti baris 344-349 Anda dengan kode di bawah ini
 # =================================================================
