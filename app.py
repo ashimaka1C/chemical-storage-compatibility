@@ -340,20 +340,13 @@ elif menu == "🔍 Cek Kompatibilitas":
     with col4:
         clear_all = st.button("🧹 Hapus Semua", use_container_width=True, key="clear_all_btn")
     
-        # =================================================================
-# SKRIP PERBAIKAN: Ganti baris 344-349 Anda dengan kode di bawah ini
-# =================================================================
-
-# Pastikan variabel 'chemical_db' sudah didefinisikan di atas baris ini
-if "chem1" not in st.session_state:
-    if "chemical_db" in locals() or "chemical_db" in globals():
-        # Mengambil item pertama dari database kimia sebagai default awal
+    if swap_btn:
+        st.session_state.chem1 = chem2
+        st.session_state.chem2 = chem1
+        st.rerun()
+    
+    if reset_btn:
         st.session_state.chem1 = list(chemical_db.keys())[0]
-    else:
-        # Alternatif jika chemical_db belum siap, gunakan nilai chem2 atau teks kosong
-        st.session_state.chem1 = "" 
-
-# =================================================================
         st.session_state.chem2 = list(chemical_db.keys())[1]
         st.rerun()
     
