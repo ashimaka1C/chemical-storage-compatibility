@@ -6,7 +6,7 @@ from datetime import datetime
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="Chemical Compatibility PRO", layout="wide")
+st.set_page_config(page_title="FCOT Chemical System", layout="wide")
 
 # =========================
 # STYLE
@@ -22,17 +22,27 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================
-# DATABASE (~300)
+# DATABASE FCOT
 # =========================
 base = {
-"HCl - Asam Klorida":"Asam","H2SO4 - Asam Sulfat":"Asam","HNO3 - Asam Nitrat":"Asam",
-"NaOH - Natrium Hidroksida":"Basa","KOH - Kalium Hidroksida":"Basa","NH3 - Amonia":"Basa",
-"KMnO4 - Kalium Permanganat":"Oksidator","H2O2 - Hidrogen Peroksida":"Oksidator",
-"Etanol - Alkohol":"Flammable","Benzena - Benzene":"Flammable","Aseton - Acetone":"Flammable",
-"Na - Natrium":"Reaktif Air","K - Kalium":"Reaktif Air",
-"H2O - Air":"Air",
-"Hg - Merkuri":"Toxic","Pb - Timbal":"Toxic",
-"NaCl - Natrium Klorida":"Inert"
+"HCl - Asam Klorida":"Corrosive",
+"H2SO4 - Asam Sulfat":"Corrosive",
+"HNO3 - Asam Nitrat":"Oxidizer",
+
+"NaOH - Natrium Hidroksida":"Corrosive",
+"KOH - Kalium Hidroksida":"Corrosive",
+
+"KMnO4 - Kalium Permanganat":"Oxidizer",
+"H2O2 - Hidrogen Peroksida":"Oxidizer",
+
+"Etanol - Alkohol":"Flammable",
+"Benzena - Benzene":"Flammable",
+"Aseton - Acetone":"Flammable",
+
+"Hg - Merkuri":"Toxic",
+"Pb - Timbal":"Toxic",
+
+"NaCl - Natrium Klorida":"Safe"
 }
 
 chemical_db = {}
@@ -41,47 +51,60 @@ for i in range(20):
         chemical_db[f"{k} ({i})"] = v
 
 # =========================
+# GHS IMAGE
+# =========================
+ghs_images = {
+"Flammable":"https://upload.wikimedia.org/wikipedia/commons/6/6c/GHS-pictogram-flamme.svg",
+"Corrosive":"https://upload.wikimedia.org/wikipedia/commons/5/5a/GHS-pictogram-acid.svg",
+"Oxidizer":"https://upload.wikimedia.org/wikipedia/commons/1/1c/GHS-pictogram-rondflam.svg",
+"Toxic":"https://upload.wikimedia.org/wikipedia/commons/3/3b/GHS-pictogram-skull.svg"
+}
+
+# =========================
 # SESSION
 # =========================
 if "history" not in st.session_state:
     st.session_state.history = []
 
 # =========================
-# ANALISIS DETAIL
+# ANALISIS FCOT
 # =========================
 def analyze(t1, t2):
 
-    if "Asam" in [t1,t2] and "Basa" in [t1,t2]:
+    if "Flammable" in [t1,t2] and "Oxidizer" in [t1,t2]:
         return ("❌ BERBAHAYA",
-        """Reaksi antara asam dan basa merupakan reaksi netralisasi yang menghasilkan garam dan air.
-Reaksi ini bersifat eksoterm, yaitu melepaskan panas dalam jumlah besar.
-Dalam kondisi tertentu, reaksi ini dapat menyebabkan tekanan tinggi, percikan bahan kimia, bahkan ledakan kecil.
-Uap yang dihasilkan juga dapat mengiritasi sistem pernapasan.""",
-        """Pisahkan dalam lemari khusus asam dan basa (corrosive cabinet),
-gunakan ventilasi baik dan wadah tahan korosi.""")
+        "Flammable + Oxidizer → kebakaran atau ledakan besar.",
+        "Pisahkan di lemari khusus.")
 
-    elif "Oksidator" in [t1,t2] and "Flammable" in [t1,t2]:
+    elif "Corrosive" in [t1,t2] and "Toxic" in [t1,t2]:
         return ("❌ BERBAHAYA",
-        """Oksidator meningkatkan laju pembakaran dan dapat menyebabkan reaksi sangat cepat.
-Jika bercampur dengan bahan mudah terbakar, dapat terjadi kebakaran hebat bahkan tanpa sumber api.""",
-        """Simpan oksidator dan bahan mudah terbakar di tempat terpisah,
-hindari panas dan percikan.""")
+        "Korosif dapat merusak wadah → toxic bocor.",
+        "Gunakan secondary containment.")
 
-    elif "Reaktif Air" in [t1,t2] and "Air" in [t1,t2]:
+    elif "Oxidizer" in [t1,t2] and "Toxic" in [t1,t2]:
         return ("❌ BERBAHAYA",
-        """Bahan reaktif air menghasilkan gas hidrogen yang sangat mudah terbakar.
-Reaksi ini sangat cepat dan dapat menyebabkan ledakan.""",
-        """Simpan di tempat kering, gunakan wadah kedap udara.""")
+        "Mempercepat pembentukan gas beracun.",
+        "Pisahkan ketat.")
+
+    elif "Flammable" in [t1,t2] and "Toxic" in [t1,t2]:
+        return ("⚠ PERLU PERHATIAN",
+        "Kebakaran + gas beracun.",
+        "Ventilasi baik.")
+
+    elif "Corrosive" in [t1,t2] and "Flammable" in [t1,t2]:
+        return ("⚠ PERLU PERHATIAN",
+        "Korosi → kebocoran bahan flammable.",
+        "Gunakan wadah tahan korosi.")
 
     elif t1 == t2:
         return ("✔ AMAN",
-        """Bahan memiliki sifat yang sama sehingga relatif stabil.""",
-        """Simpan dalam kelompok yang sama dengan label jelas.""")
+        "Kategori sama → relatif stabil.",
+        "Simpan bersama.")
 
     else:
         return ("⚠ PERLU PERHATIAN",
-        """Tidak ada reaksi langsung, namun potensi interaksi tetap ada.""",
-        """Gunakan pemisahan sekunder.""")
+        "Tidak reaktif langsung tapi tetap berisiko.",
+        "Pisahkan sekunder.")
 
 # =========================
 # MENU
@@ -94,24 +117,16 @@ menu = st.sidebar.radio("📌 Menu", [
 # HOME
 # =========================
 if menu == "🏠 Home":
-    st.markdown("<div class='title'>🧪 Chemical Compatibility System PRO</div>", unsafe_allow_html=True)
+    st.markdown("<div class='title'>🧪 FCOT Chemical Storage System</div>", unsafe_allow_html=True)
 
-    st.subheader("📖 Pengertian")
-    st.write("Metode penyimpanan bahan kimia berdasarkan sifat untuk mencegah reaksi berbahaya.")
-
-    st.subheader("🎯 Tujuan")
-    st.write("""
-    - Mencegah kecelakaan  
-    - Menjamin keamanan  
-    - Mendukung K3  
-    """)
+    st.write("Sistem penyimpanan bahan kimia berbasis FCOT dan standar GHS.")
 
 # =========================
 # CEK
 # =========================
 elif menu == "🔍 Cek":
 
-    st.title("🔍 Cek Kompatibilitas")
+    st.title("🔍 Cek Kompatibilitas FCOT + GHS")
 
     c1,c2 = st.columns(2)
     with c1:
@@ -122,7 +137,7 @@ elif menu == "🔍 Cek":
     if st.button("Cek Sekarang"):
 
         with st.spinner("🔬 Menganalisis..."):
-            time.sleep(2)
+            time.sleep(1.5)
 
         t1 = chemical_db[chem1]
         t2 = chemical_db[chem2]
@@ -136,21 +151,22 @@ elif menu == "🔍 Cek":
         else:
             st.markdown(f"<h2 class='warning'>{status}</h2>", unsafe_allow_html=True)
 
-        st.write(f"**{chem1} ({t1}) vs {chem2} ({t2})**")
+        # GHS IMAGE DISPLAY
+        col1, col2 = st.columns(2)
 
-        st.subheader("🧠 Penjelasan Ilmiah")
+        with col1:
+            st.image(ghs_images.get(t1, ""), width=120)
+            st.write(f"{chem1} ({t1})")
+
+        with col2:
+            st.image(ghs_images.get(t2, ""), width=120)
+            st.write(f"{chem2} ({t2})")
+
+        st.subheader("🧠 Penjelasan")
         st.write(penjelasan)
 
         st.subheader("📦 Penyimpanan")
         st.info(penyimpanan)
-
-        st.subheader("⚠ Dampak")
-        st.write("""
-        - Kebakaran  
-        - Ledakan  
-        - Gas beracun  
-        - Kerusakan alat  
-        """)
 
         st.session_state.history.append({
             "Waktu": datetime.now().strftime("%H:%M:%S"),
@@ -160,29 +176,26 @@ elif menu == "🔍 Cek":
         })
 
 # =========================
-# MATERI FULL
+# MATERI
 # =========================
 elif menu == "📚 Materi":
-    st.title("📚 Materi Lengkap Sistem Penyimpanan Kimia")
+
+    st.title("📚 Sistem FCOT & GHS")
 
     st.markdown("""
-### 1. Pengertian Sistem Penyimpanan Bahan Kimia Kompatibel
-Sistem penyimpanan bahan kimia kompatibel adalah suatu metode penataan, pengelompokan, dan penempatan zat-zat kimia di dalam ruang penyimpanan atau laboratorium yang didasarkan sepenuhnya pada sifat fisika dan karakteristik kimia masing-masing bahan. Sistem ini secara spesifik menjauhkan zat-zat yang jika bercampur dapat memicu reaksi berbahaya. Di dalam dunia sains dan industri, metode ini menggantikan sistem penyimpanan konvensional berbasis urutan alfabetis. Penyimpanan berbasis alfabetis dinilai sangat berbahaya karena sering kali menempatkan dua zat yang saling reaktif secara berdampingan, seperti menempatkan asam kuat tepat di sebelah basa kuat atau bahan organik di samping oksidator. Fondasi utama dari sistem kompatibel ini adalah analisis mendalam terhadap dokumen Safety Data Sheet (SDS) atau Lembar Data Keselamatan Bahan yang menyertai setiap zat kimia.
+### FCOT
+- Flammable  
+- Corrosive  
+- Oxidizer  
+- Toxic  
 
-### 2. Fungsi Utama
-Fungsi utama dari sistem penyimpanan kompatibel adalah sebagai benteng pertahanan pertama dalam mengendalikan risiko bahaya di area penyimpanan. Secara teknis, sistem ini berfungsi untuk mengisolasi potensi bahaya dengan cara mengelompokkan bahan kimia ke dalam kategori spesifikasi yang sejenis, seperti kelompok mudah terbakar (flammable), korosif, oksidator, beracun (toxic), dan reaktif terhadap air. Selain itu, fungsi penataan ini juga mempermudah pengawasan masa kedaluwarsa zat serta mempercepat proses audit inventaris berkala. Dengan pengelompokan yang sistematis, pengelola laboratorium dapat dengan mudah mengenali letak bahan, memastikan bahwa setiap zat disimpan dalam kondisi lingkungan (suhu dan kelembapan) yang tepat, serta mengidentifikasi potensi kerusakan wadah secara lebih dini sebelum menimbulkan dampak yang lebih luas.
+### Simbol GHS
+- GHS02 🔥 Flammable  
+- GHS05 🧪 Corrosive  
+- GHS03 ⚡ Oxidizer  
+- GHS06 ☠️ Toxic  
 
-### 3. Manfaat
-Penerapan sistem penyimpanan bahan kimia berdasarkan kompatibilitas memberikan keuntungan yang luas bagi institusi, yang dapat dijabarkan ke dalam beberapa poin krusial berikut:Mencegah Kecelakaan Kerja Fatal: Melindungi laboran, peneliti, dan petugas gudang dari risiko cedera parah akibat ledakan spontan, kebakaran, maupun keracunan akibat paparan gas toksik.Meminimalkan Efek Domino Saat Bencana: Mencegah terjadinya eskalasi atau pembesaran skala bencana saat terjadi gempa bumi atau kebakaran eksternal, karena botol-botol kimia yang pecah tidak akan memicu reaksi berantai baru.Melindungi Aset dan Fasilitas Fisik: Menjaga gedung, infrastruktur ruangan, serta instrumen laboratorium yang bernilai tinggi dari kerusakan fatal akibat kebakaran atau korosi yang disebabkan oleh uap asam/basa.Memperpanjang Masa Simpan Bahan Kimia: Menghindari kontaminasi silang antar-uap zat kimia di dalam ruangan, sehingga kualitas dan efektivitas senyawa kimia tetap terjaga dengan baik dalam jangka panjang.Meningkatkan Efisiensi Tata Kelola Inventaris: Mempercepat proses pencarian, pengambilan, dan pengembalian zat kimia karena setiap bahan telah terpetakan secara sistematis berdasarkan kelompoknya.Mempermudah Penanggulangan Situasi Darurat: Membantu tim pemadam kebakaran atau tim K3 dalam memetakan area risiko saat terjadi kebocoran, sehingga proses evakuasi dan netralisasi zat dapat dilakukan secara cepat dan tepat.Menjamin Kepatuhan Hukum dan Regulasi: Memastikan laboratorium atau industri memenuhi standar baku keselamatan kerja nasional maupun internasional, seperti audit ISO atau akreditasi laboratorium.
-
-### 4. Alasan Penerapan
-Alasan mendasar mengapa sistem penyimpanan kompatibel bersifat wajib dan tidak dapat ditawar adalah karena sifat alami bahan kimia yang tidak pernah stabil secara absolut. Banyak senyawa kimia yang memiliki kecenderungan kuat untuk bereaksi hebat secara spontan ketika bersentuhan dengan senyawa dari kelompok lain. Sebagai contoh, interaksi antara cairan mudah terbakar dengan zat oksidator dapat menyulut api instan tanpa memerlukan sumber percikan eksternal. Begitu pula dengan bahan reaktif air seperti logam natrium yang akan meledak jika terkena kelembapan udara atau percikan air. Tanpa adanya sistem pemisahan yang terstruktur, probabilitas terjadinya kecelakaan kerja akibat kelalaian manusia (human error), seperti botol tersenggol atau kebocoran wadah, akan selalu mengancam keselamatan jiwa dan keberlangsungan operasional.
-
-### 5. Prinsip Pemisahan
-Dalam mengeksekusi sistem ini, terdapat prinsip pemisahan fisik (segregation) yang harus dipatuhi secara ketat. Pemisahan tidak boleh sekadar berupa pemberian jarak di atas rak yang sama, melainkan harus menggunakan sekat fisik yang tidak dapat ditembus, lemari penyimpanan khusus (seperti flammable cabinet), atau bahkan penempatan di ruangan yang berbeda. Tantangan tersendiri muncul ketika suatu zat memiliki bahaya ganda (multiple hazards), contohnya zat yang bersifat korosif sekaligus mudah terbakar. Dalam kondisi kompleks seperti ini, aturan yang berlaku adalah memprioritaskan pemisahan berdasarkan sifat bahaya yang paling dominan atau risiko yang paling ekstrem, yang kemudian wajib didukung dengan penggunaan wadah penampung sekunder (secondary containment) berupa baki antikorosi untuk mengurung tumpahan sekecil apa pun.
-
-### 6. Fasilitas dan Administrasi
-Kesempurnaan sistem penyimpanan ini tidak hanya bertumpu pada pengelompokan zat, melainkan juga harus didukung oleh kualitas fasilitas fisik dan manajemen administrasi yang disiplin. Rak penyimpanan harus terbuat dari material yang tahan terhadap paparan kimia, tidak boleh menempatkan bahan kimia berbahaya langsung di atas lantai, dan dilarang keras menyimpan botol kimia di atas ketinggian mata manusia demi menghindari cipratan pada wajah saat pengambilan. Dari sisi administrasi, manajemen pelabelan yang jelas menggunakan simbol bahaya standar global (Globally Harmonized System/GHS), pencantuman tanggal penerimaan bahan, serta tanggal pertama kali wadah dibuka menjadi instrumen vital yang memastikan bahwa seluruh rantai pengawasan bahan kimia berjalan dengan sempurna dan sesuai dengan regulasi keselamatan kerja internasional.
+Digunakan secara global dalam K3 laboratorium.
 """)
 
 # =========================
