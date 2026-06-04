@@ -5,7 +5,11 @@ from datetime import datetime
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="Chemical Compatibility System", layout="wide")
+st.set_page_config(
+    page_title="Chemical Compatibility System",
+    page_icon="🧪",
+    layout="wide"
+)
 
 # =========================
 # DATABASE
@@ -32,28 +36,28 @@ if "history" not in st.session_state:
 # =========================
 def check_compatibility(t1, t2):
     if "Asam" in [t1,t2] and "Basa" in [t1,t2]:
-        return "DANGER","Reaksi eksoterm"
+        return "DANGER","Reaksi eksoterm (panas tinggi)"
     if "Oksidator" in [t1,t2] and "Flammable" in [t1,t2]:
-        return "DANGER","Risiko kebakaran"
+        return "DANGER","Risiko kebakaran/ledakan"
     if "Reaktif Air" in [t1,t2] and "Air" in [t1,t2]:
-        return "DANGER","Reaksi dengan air"
+        return "DANGER","Reaksi hebat dengan air"
     if t1 == t2:
-        return "SAFE","Stabil"
-    return "WARNING","Perlu perhatian"
+        return "SAFE","Relatif stabil"
+    return "WARNING","Perlu kehati-hatian"
 
 def smart_ai_analysis(t1,t2):
     if "Asam" in [t1,t2] and "Basa" in [t1,t2]:
-        return "High","Netralisasi menghasilkan panas tinggi","Pisahkan total"
+        return "High","Reaksi netralisasi menghasilkan panas tinggi.","Pisahkan penyimpanan asam dan basa"
     if "Oksidator" in [t1,t2] and "Flammable" in [t1,t2]:
-        return "High","Potensi kebakaran","Pisahkan jauh"
+        return "High","Berpotensi kebakaran/ledakan.","Jauhkan oksidator dari bahan organik"
     if "Reaktif Air" in [t1,t2] and "Air" in [t1,t2]:
-        return "High","Reaksi eksplosif","Hindari kontak air"
+        return "High","Reaksi eksplosif dengan air.","Simpan di tempat kering"
     if t1 == t2:
-        return "Low","Stabil","Simpan bersama"
-    return "Medium","Interaksi tidak langsung","Gunakan pemisahan"
+        return "Low","Stabil dalam kategori yang sama.","Boleh disimpan bersama"
+    return "Medium","Interaksi tidak langsung mungkin terjadi.","Gunakan pemisahan sekunder"
 
 # =========================
-# SIDEBAR MENU
+# MENU SIDEBAR
 # =========================
 menu = st.sidebar.radio("📌 Menu", [
     "🏠 Home",
@@ -69,19 +73,43 @@ menu = st.sidebar.radio("📌 Menu", [
 # =========================
 if menu == "🏠 Home":
     st.title("🧪 Chemical Storage Compatibility System")
+
     st.markdown("""
     Sistem ini dirancang untuk membantu analisis kompatibilitas penyimpanan **dua bahan kimia**
     menggunakan konsep **FCOT (Flow, Check, Organize, Track)**.
-    
-    🔬 Fitur:
-    - Analisis kompatibilitas
-    - AI rekomendasi
-    - Dashboard monitoring
-    - Materi pembelajaran
+    """)
+
+    # Pengertian
+    st.subheader("📖 Pengertian")
+    st.write("""
+    Kompatibilitas penyimpanan bahan kimia adalah kemampuan dua atau lebih bahan kimia
+    untuk disimpan bersama tanpa menimbulkan reaksi berbahaya seperti ledakan, kebakaran,
+    atau pembentukan gas beracun. Pengelolaan yang tepat sangat penting dalam menjaga
+    keselamatan kerja di laboratorium dan industri.
+    """)
+
+    # Tujuan
+    st.subheader("🎯 Tujuan")
+    st.write("""
+    - Menentukan apakah dua bahan kimia aman disimpan bersama  
+    - Mencegah terjadinya reaksi berbahaya  
+    - Memberikan rekomendasi penyimpanan sesuai standar K3  
+    - Membantu pengelolaan bahan kimia secara sistematis  
+    - Meningkatkan keselamatan kerja di laboratorium  
+    """)
+
+    # Fitur
+    st.subheader("🔬 Fitur Utama")
+    st.write("""
+    - 🔍 Cek kompatibilitas dua bahan kimia  
+    - 🧠 AI analisis risiko  
+    - 📊 Dashboard monitoring  
+    - 📚 Materi pembelajaran  
+    - 🧪 Database bahan kimia  
     """)
 
 # =========================
-# CEK
+# CEK KOMPATIBILITAS
 # =========================
 elif menu == "🔍 Cek Kompatibilitas":
     st.title("🔍 Cek Kompatibilitas")
@@ -99,7 +127,7 @@ elif menu == "🔍 Cek Kompatibilitas":
 
         status, desc = check_compatibility(t1,t2)
 
-        st.subheader("Hasil")
+        st.subheader("✅ Hasil Utama")
         st.write(f"{chem1} ({t1}) vs {chem2} ({t2})")
 
         if status == "SAFE":
@@ -109,13 +137,15 @@ elif menu == "🔍 Cek Kompatibilitas":
         else:
             st.warning(desc)
 
-        st.markdown("## 🧠 AI Analysis")
+        # AI
+        st.markdown("## 🧠 AI Smart Analysis")
         risk, exp, reco = smart_ai_analysis(t1,t2)
 
-        st.write(f"**Risk:** {risk}")
+        st.write(f"**Risk Level:** {risk}")
         st.write(f"**Analisis:** {exp}")
         st.write(f"**Rekomendasi:** {reco}")
 
+        # Simpan history
         st.session_state.history.append({
             "Bahan1": chem1,
             "Bahan2": chem2,
@@ -130,44 +160,44 @@ elif menu == "📚 Materi":
     st.title("📚 Materi Kompatibilitas Kimia")
 
     st.subheader("1. Pengertian")
-    st.write("Kompatibilitas penyimpanan adalah kemampuan bahan kimia untuk disimpan bersama tanpa reaksi berbahaya.")
+    st.write("Kompatibilitas adalah kemampuan bahan kimia disimpan bersama tanpa reaksi berbahaya.")
 
     st.subheader("2. Prinsip Dasar")
     st.write("""
-    - Asam tidak boleh dengan basa
-    - Oksidator tidak dengan bahan organik
-    - Reaktif air harus kering
+    - Asam ≠ Basa  
+    - Oksidator ≠ Flammable  
+    - Reaktif air ≠ Air  
     """)
 
     st.subheader("3. Konsep FCOT")
     st.write("""
-    - Flow → alur sistem
-    - Check → analisis
-    - Organize → pengelompokan
-    - Track → monitoring
+    Flow → Input pengguna  
+    Check → Analisis sistem  
+    Organize → Pengelompokan  
+    Track → Monitoring  
     """)
 
     st.subheader("4. Contoh Kasus")
-    st.write("HCl + NaOH → reaksi panas (tidak boleh disimpan bersama)")
+    st.write("HCl + NaOH → Reaksi eksoterm (tidak boleh disimpan bersama)")
 
 # =========================
 # DATABASE
 # =========================
 elif menu == "🧪 Database":
-    st.title("🧪 Database Bahan Kimia")
+    st.title("🧪 Database Kimia")
 
     df = pd.DataFrame(list(chemical_db.items()), columns=["Bahan","Kategori"])
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
 
 # =========================
 # DASHBOARD
 # =========================
 elif menu == "📊 Dashboard":
-    st.title("📊 Dashboard")
+    st.title("📊 Dashboard Monitoring")
 
     if st.session_state.history:
         df = pd.DataFrame(st.session_state.history)
-        st.dataframe(df)
+        st.dataframe(df, use_container_width=True)
 
         st.subheader("Statistik Status")
         st.bar_chart(df["Status"].value_counts())
@@ -181,14 +211,14 @@ elif menu == "📊 Dashboard":
 # TENTANG
 # =========================
 elif menu == "ℹ Tentang":
-    st.title("ℹ Tentang Sistem")
+    st.title("ℹ Tentang")
 
     st.write("""
-    Website ini dibuat untuk membantu keselamatan laboratorium
-    dalam penyimpanan bahan kimia menggunakan pendekatan digital.
-    
-    Dibangun dengan:
+    Website ini dibuat untuk membantu analisis kompatibilitas penyimpanan bahan kimia
+    secara digital berbasis konsep FCOT dan AI sederhana.
+
+    Teknologi:
     - Python
     - Streamlit
-    - Konsep FCOT
+    - Rule-based + AI logic
     """)
